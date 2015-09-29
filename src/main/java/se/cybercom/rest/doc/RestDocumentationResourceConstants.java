@@ -7,6 +7,7 @@ package se.cybercom.rest.doc;
 public final class RestDocumentationResourceConstants {
 
    public static final String RESOURCE_TYPE = "resourceType";
+   public static final String DOMAIN_DATA_TYPE = "domainData";
 
    /**
     * Hidden to prevent instantiation.

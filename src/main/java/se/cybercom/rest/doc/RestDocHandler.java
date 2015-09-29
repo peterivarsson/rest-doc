@@ -344,9 +344,14 @@ public class RestDocHandler {
  
       returnInfo.setAnnotatedReturnType( returnTypeClassName );
       
+      addDomainDataInfo( returnTypeClassName );
+   }
+
+   private void addDomainDataInfo( String className ) {
+ 
       try {
           
-         Class clazz = Class.forName( returnTypeClassName );      
+         Class clazz = Class.forName( className );      
 
          DataModelInfo dataModelInfo = new DataModelInfo();
          
@@ -377,7 +382,7 @@ public class RestDocHandler {
          
          if( ! dataModelInfo.getFields().isEmpty() ) {
             
-            dataModelInfo.setPackageAndClassName( returnTypeClassName );
+            dataModelInfo.setPackageAndClassName( className );
 
             restInfo.getDataModelInfo().add( dataModelInfo );
          }
@@ -499,9 +504,12 @@ public class RestDocHandler {
             {
                parameterInfo.setParameterAnnotationName( parameter.getName() );
             }
+
             parameterInfo.setParameterClassName( parameter.getType().getName() );
 
             methodInfo.getParameterInfo().add( parameterInfo );
+            
+            addDomainDataInfo(parameter.getType().getName() );
                   
             logger.debug( "Parameter without annotation: " + parameter.getName() + " Type: " + parameter.getType().getName() );
          }
