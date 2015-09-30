@@ -225,13 +225,12 @@ public class RestDocumentationResource {
       parameterInfoList.stream().forEach( (param) -> {
       
          htmlBuffer.append( "\r\t\t\t<tr><td>" );
-         if ( param.getParameterClassName().startsWith( "java" ) ) {
+         htmlBuffer.append( param.getParameterAnnotationName() );
+         htmlBuffer.append( "</td><td>" );
+         if ( isDomainData( param.getParameterClassName() ) ) {
             
-            htmlBuffer.append( param.getParameterClassName() );
-         }
-         else {
-            
-            htmlBuffer.append( "\r\t\t<li><a href=\"" );
+            // Domain data
+            htmlBuffer.append( "\r\t\t<a href=\"" );
             htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
             htmlBuffer.append( "resources/" );
             htmlBuffer.append( resourceType );
@@ -241,8 +240,10 @@ public class RestDocumentationResource {
             htmlBuffer.append( param.getParameterClassName() );
             htmlBuffer.append( "</a>" );
          }
-         htmlBuffer.append( "</td><td>" );
-         htmlBuffer.append( param.getParameterAnnotationName() );
+         else {
+            
+            htmlBuffer.append( param.getParameterClassName() );
+         }
          htmlBuffer.append( "</td><td>" );
          switch( param.getParameterType() ) {
             
@@ -269,14 +270,24 @@ public class RestDocumentationResource {
       
       htmlBuffer.append( "\r\t\t\t<tr><td>" );
       
-      if( (methodInfo.getReturnInfo().getAnnotatedReturnType() == null) ||
-           methodInfo.getReturnInfo().getAnnotatedReturnType().isEmpty() ) {
+      if( ( ( methodInfo.getReturnInfo().getAnnotatedReturnType() == null ) ||
+            methodInfo.getReturnInfo().getAnnotatedReturnType().isEmpty() ) &&
+          ( isDomainData( methodInfo.getReturnInfo().getReturnClassName() ) == false)  ) {
          
          htmlBuffer.append( methodInfo.getReturnInfo().getReturnClassName() );
       }
       else  {
          
+         // Domasin data
+         htmlBuffer.append( "\r\t\t<a href=\"" );
+         htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
+         htmlBuffer.append( "resources/" );
+         htmlBuffer.append( resourceType );
+         htmlBuffer.append( "/data/" );
          htmlBuffer.append( methodInfo.getReturnInfo().getAnnotatedReturnType() );
+         htmlBuffer.append( "\">" );
+         htmlBuffer.append( methodInfo.getReturnInfo().getAnnotatedReturnType() );
+         htmlBuffer.append( "</a>" );
       }
         
       htmlBuffer.append( "</td><td>" );
@@ -373,6 +384,59 @@ public class RestDocumentationResource {
       htmlBuffer.append( "\r\r\t<ul style=\"list-style-type: none\">" );
       htmlBuffer.append( "\r\t\t<li><a href=\"#top\"><h4>To top</h4></a></li>" );
       htmlBuffer.append( "\r\t</ul>\r\t</body>\r</html>" );
+   }
+
+   private boolean isDomainData( final String parameterName ) {
+      
+      // Check for 'Java classes' or 'Primitive Data Types'
+      
+      if( parameterName.startsWith( "java" ) ) {
+         
+         // Is a Java class
+         return false;
+      }
+      else if( parameterName.equals( "byte" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "short" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "int" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "long" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "float" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "double" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "boolean" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      else if( parameterName.equals( "char" ) ) {
+         
+         // Is a Primitive Data Type
+         return false;
+      }
+      
+      return true;
    }
 
 }
