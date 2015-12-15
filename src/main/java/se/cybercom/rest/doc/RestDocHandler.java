@@ -43,35 +43,30 @@ public class RestDocHandler {
       restInfo.setClassInfo( new ArrayList<>() );
       restInfo.setDataModelInfo( new ArrayList<>() );
 
-      String filePath = System.getProperty( "rest-doc.properties.filepath" );
+      String useRestDoc = System.getProperty( "use.rest-doc" );
       
-      if( filePath != null ) {
+      if( (useRestDoc != null) && useRestDoc.equals( "yes" ) ) {
          
-         final File propsFile = new File( filePath + "/rest-doc.properties" );
+         // Only do this if the file useRestDoc property is yes
 
-         if( propsFile.exists() ) {
-            
-            // Only do this if the file rest-doc.properties exists
+         CodeSource src = RestDocHandler.class.getProtectionDomain().getCodeSource();
 
-            CodeSource src = RestDocHandler.class.getProtectionDomain().getCodeSource();
+         if( src != null ) {
 
-            if( src != null ) {
+            URL jar = src.getLocation();
 
-               URL jar = src.getLocation();
+            try {
 
-               try {
+               Files.walk( Paths.get( jar.getPath() ) )
+                  .filter( Files::isRegularFile )
+                  .forEach( ( path ) -> {
 
-                  Files.walk( Paths.get( jar.getPath() ) )
-                     .filter( Files::isRegularFile )
-                     .forEach( ( path ) -> {
+                     checkClassFilesForPathAnnotations( path );
+                  } );
+            }
+            catch( IOException ioe ) {
 
-                        checkClassFilesForPathAnnotations( path );
-                     } );
-               }
-               catch( IOException ioe ) {
-
-                  logger.debug( "IOException reading war file: " + ioe.getMessage() );
-               }
+               logger.debug( "IOException reading war file: " + ioe.getMessage() );
             }
          }
       }
