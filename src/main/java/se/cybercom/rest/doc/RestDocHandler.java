@@ -5,6 +5,7 @@
  */
 package se.cybercom.rest.doc;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -38,27 +39,40 @@ public class RestDocHandler {
    @PostConstruct
    private void init() {
 
+
       restInfo.setClassInfo( new ArrayList<>() );
       restInfo.setDataModelInfo( new ArrayList<>() );
 
-      CodeSource src = RestDocHandler.class.getProtectionDomain().getCodeSource();
-
-      if( src != null ) {
-
-         URL jar = src.getLocation();
+      String filePath = System.getProperty( "rest-doc.properties.filepath" );
+      
+      if( filePath != null ) {
          
-         try {
+         final File propsFile = new File( filePath + "/rest-doc.properties" );
+
+         if( propsFile.exists() ) {
             
-            Files.walk( Paths.get( jar.getPath() ) )
-               .filter( Files::isRegularFile )
-               .forEach( ( path ) -> {
-                  
-                  checkClassFilesForPathAnnotations( path );
-               } );
-         }
-         catch( IOException ioe ) {
-            
-            logger.debug( "IOException reading war file: " + ioe.getMessage() );
+            // Only do this if the file rest-doc.properties exists
+
+            CodeSource src = RestDocHandler.class.getProtectionDomain().getCodeSource();
+
+            if( src != null ) {
+
+               URL jar = src.getLocation();
+
+               try {
+
+                  Files.walk( Paths.get( jar.getPath() ) )
+                     .filter( Files::isRegularFile )
+                     .forEach( ( path ) -> {
+
+                        checkClassFilesForPathAnnotations( path );
+                     } );
+               }
+               catch( IOException ioe ) {
+
+                  logger.debug( "IOException reading war file: " + ioe.getMessage() );
+               }
+            }
          }
       }
    }
