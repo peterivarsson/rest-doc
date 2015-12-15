@@ -35,7 +35,13 @@ public class RestDocHandler {
 
    public static RestInfo restInfo = new RestInfo();
 
-
+   /**
+    * Add the folowing in wildfly
+    *
+    *  <system-properties>
+    *    <property name="use.rest-doc" value="yes"/>
+    *  </system-properties>
+    */            
    @PostConstruct
    private void init() {
 
