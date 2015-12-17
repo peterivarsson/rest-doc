@@ -39,7 +39,7 @@ public class RestDocHandler {
     * Add the folowing in wildfly
     *
     *  <system-properties>
-    *    <property name="use.rest-doc" value="yes"/>
+    *    <property name="show.rest-doc" value="true"/>
     *  </system-properties>
     */            
    @PostConstruct
@@ -49,9 +49,9 @@ public class RestDocHandler {
       restInfo.setClassInfo( new ArrayList<>() );
       restInfo.setDataModelInfo( new ArrayList<>() );
 
-      String useRestDoc = System.getProperty( "use.rest-doc" );
+      String showRestDoc = System.getProperty( "show.rest-doc" );
       
-      if( (useRestDoc != null) && useRestDoc.equals( "yes" ) ) {
+      if( (showRestDoc != null) && showRestDoc.equals( "true" ) ) {
          
          // Only do this if the file useRestDoc property is yes
 
