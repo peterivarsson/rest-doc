@@ -5,6 +5,7 @@
  */
 package se.cybercom.rest.doc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,16 +14,7 @@ import java.util.List;
  */
 public class DataModelInfo {
    
-   private String          packageAndClassName;
-   private List<FieldInfo> fields;
-
-   public String getPackageAndClassName() {
-      return packageAndClassName;
-   }
-
-   public void setPackageAndClassName( String packageAndClassName ) {
-      this.packageAndClassName = packageAndClassName;
-   }
+   private List<FieldInfo> fields = new ArrayList<>();
 
    public List<FieldInfo> getFields() {
       return fields;

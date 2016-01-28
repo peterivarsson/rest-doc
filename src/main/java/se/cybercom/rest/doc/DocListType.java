@@ -14,20 +14,19 @@ import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
 /**
- * In the example below show real return type instead of Responce as return type.
+ * Mark metods that returns a list so that content in list will shown
  * 
- * I.e. If the type is Response, show real return type instead.
- *      In this case MovieList.
- * 
- * @DocReturnType(key = "se.sfbio.mobilebackend.domain.MovieList")
- * public Response getCurrentMovies(@PathParam(PARAM_CITY_ID) final String cityId,
+ * I.e. In the Data object for MovieList a link to Movie data object will be shown
+ *
+ * @DocListType(key = "se.sfbio.mobilebackend.domain.Movie")
+ * public List<Movie> getMovies() {
  *
  * @author Peter Ivarsson Peter.Ivarsson@cybercom.com
  */
 @Qualifier
 @Retention(RUNTIME)
 @Target({METHOD})
-public @interface DocReturnType {
+public @interface DocListType {
    
     @Nonbinding
     String key() default "";

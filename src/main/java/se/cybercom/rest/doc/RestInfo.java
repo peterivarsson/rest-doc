@@ -5,6 +5,7 @@
  */
 package se.cybercom.rest.doc;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
 public class RestInfo {
    
    private List<ClassInfo>      classInfo;
-   private List<DataModelInfo>  dataModelInfo;
+   private HashMap<String, DataModelInfo>  dataModelInfo = new HashMap<>();
 
    public List<ClassInfo> getClassInfo() {
       return classInfo;
@@ -24,11 +25,11 @@ public class RestInfo {
       this.classInfo = classInfo;
    }
 
-   public List<DataModelInfo> getDataModelInfo() {
+   public HashMap<String, DataModelInfo> getDataModelInfo() {
       return dataModelInfo;
    }
 
-   public void setDataModelInfo( List<DataModelInfo> dataModelInfo ) {
+   public void setDataModelInfo( HashMap<String, DataModelInfo> dataModelInfo ) {
       this.dataModelInfo = dataModelInfo;
    }
 

@@ -6,6 +6,7 @@
 package se.cybercom.rest.doc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,6 +44,8 @@ public class RestDocumentationResource {
    @Path( "" )
    public String getRestDocumentation() {
 
+      logger.debug( "getResouresDocumentation() main" );
+      
       final StringBuffer htmlBuffer = htmlHeader();
       
       htmlBodyHeader( htmlBuffer, "REST Resources" );
@@ -66,6 +69,8 @@ public class RestDocumentationResource {
    @Path("/{" + RESOURCE_TYPE + "}")
    public String getResouresDocumentation( @PathParam(RESOURCE_TYPE) final String resourceType ) {
 
+      logger.debug( "getResouresDocumentation( " + resourceType + " )" );
+      
       final StringBuffer htmlBuffer = htmlHeader();
 
       htmlBodyHeader( htmlBuffer, resourceType );
@@ -92,6 +97,8 @@ public class RestDocumentationResource {
    public String getDomainDataDocumentation( @PathParam(RESOURCE_TYPE) final String resourceType,
                                              @PathParam(DOMAIN_DATA_TYPE) final String domainDataType ) {
 
+      logger.debug( "getResouresDocumentation( " + resourceType + ", " + domainDataType + " )" );
+      
       final StringBuffer htmlBuffer = htmlHeader();
       
       htmlBodyHeader( htmlBuffer, domainDataType );
@@ -152,6 +159,9 @@ public class RestDocumentationResource {
    
       htmlBuffer.append( "\r\r\t<ul>" );
               
+      logger.debug( "htmlRestResourcesList()  restInfo.ClassInfo size = " + 
+                    RestDocHandler.restInfo.getClassInfo().size() );
+      
       RestDocHandler.restInfo.getClassInfo().stream().forEach( (res) -> {
          
          htmlBuffer.append( "\r\t\t<li><a href=\"" );
@@ -172,6 +182,9 @@ public class RestDocumentationResource {
    
       List<MethodInfo>  methodInfoList = new ArrayList<>();
               
+      logger.debug( "htmlRestResourceDetail()  restInfo.ClassInfo size = " + 
+                    RestDocHandler.restInfo.getClassInfo().size() );
+      
       RestDocHandler.restInfo.getClassInfo().stream().forEach( (res) -> {
          
          if( res.getClassName().equals( resourceType ) ) {
@@ -299,15 +312,10 @@ public class RestDocumentationResource {
    
    private void htmlRestResourceDomainData( final StringBuffer htmlBuffer, final String domainDataType ) {
    
-      final List<FieldInfo> fields = new ArrayList<>();
-              
-      RestDocHandler.restInfo.getDataModelInfo().stream().forEach( (data) -> {
-         
-         if( data.getPackageAndClassName().equals( domainDataType ) ) {
-            
-            fields.addAll( data.getFields() );
-         };
-      } );
+      logger.debug( "htmlRestResourceDomainData()  restInfo.ClassInfo size = " + 
+                    RestDocHandler.restInfo.getClassInfo().size() );
+      
+      final List<FieldInfo> fields = RestDocHandler.restInfo.getDataModelInfo().get( domainDataType ).getFields();
       
       htmlBuffer.append( "\r\r\t\t<table>" );
 
@@ -323,7 +331,6 @@ public class RestDocumentationResource {
       } );
       
       htmlBuffer.append( "\r\t\t</table><BR>" );
-
    }
    
    private void htmlRestProgrammerInfo( final StringBuffer htmlBuffer ) {

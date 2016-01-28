@@ -5,7 +5,6 @@
  */
 package se.cybercom.rest.doc;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -47,10 +46,11 @@ public class RestDocHandler {
 
 
       restInfo.setClassInfo( new ArrayList<>() );
-      restInfo.setDataModelInfo( new ArrayList<>() );
 
       String showRestDoc = System.getProperty( "show.rest-doc" );
-      
+
+      logger.debug( "System Property 'show.rest-doc': " + showRestDoc );
+            
       if( (showRestDoc != null) && showRestDoc.equals( "true" ) ) {
          
          // Only do this if the file useRestDoc property is yes
@@ -67,12 +67,16 @@ public class RestDocHandler {
                   .filter( Files::isRegularFile )
                   .forEach( ( path ) -> {
 
+                     logger.debug( "jar.getPath() " + path );
+      
                      checkClassFilesForPathAnnotations( path );
                   } );
             }
             catch( IOException ioe ) {
 
                logger.debug( "IOException reading war file: " + ioe.getMessage() );
+
+               ioe.printStackTrace();
             }
          }
       }
@@ -117,7 +121,7 @@ public class RestDocHandler {
       }
       catch( ClassNotFoundException cnfe ) {
          
-         logger.debug( "ClassNotFoundException: " + cnfe.getMessage() );
+         logger.debug( "checkClassFilesForPathAnnotations, ClassNotFoundException: " + cnfe.getMessage() );
       }
    }
 
@@ -370,8 +374,6 @@ public class RestDocHandler {
 
          DataModelInfo dataModelInfo = new DataModelInfo();
          
-         dataModelInfo.setFields( new ArrayList<>() );
-
          Method[] methods = clazz.getMethods();
          
          for( Method method : methods ) {
@@ -389,22 +391,42 @@ public class RestDocHandler {
                   
                   fieldInfo.setFieldName( new String(c) );
                   fieldInfo.setFieldType( fieldType );
+                  
+                  for( Annotation annotation: method.getAnnotations() ) {
+                     
+                     String name = annotation.toString();
+
+                     if( annotation instanceof se.cybercom.rest.doc.DocListType ) {
+
+                        se.cybercom.rest.doc.DocListType methodParam = (se.cybercom.rest.doc.DocListType) annotation;
+                        
+                        String annotationKey = methodParam.key();
+                        
+                        DataModelInfo dataModelInfoForListAnnotation = restInfo.getDataModelInfo().get( annotationKey ); 
+                                
+                        if( dataModelInfoForListAnnotation == null ) {
+
+                           fieldInfo.setListOfType( annotationKey );
+
+                           // This info not added before, call recursive
+                           addDomainDataInfo( annotationKey );
+                        }
+                     }
+                  }
                
                   dataModelInfo.getFields().add( fieldInfo );
                }
             }
          }
-         
+              
          if( ! dataModelInfo.getFields().isEmpty() ) {
             
-            dataModelInfo.setPackageAndClassName( className );
-
-            restInfo.getDataModelInfo().add( dataModelInfo );
+            restInfo.getDataModelInfo().put( className, dataModelInfo );
          }
       }
       catch( ClassNotFoundException cnfe ) {
          
-         logger.debug( "ClassNotFoundException: " + cnfe.getMessage() );
+         logger.debug( "addDomainDataInfo, ClassNotFoundException: " + cnfe.getMessage() );
       }
    }
 

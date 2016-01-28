@@ -13,6 +13,7 @@ public class FieldInfo {
    
    String fieldName;
    String fieldType;
+   String listOfType = "";   // List of type
 
    public String getFieldName() {
       return fieldName;
@@ -28,6 +29,14 @@ public class FieldInfo {
 
    public void setFieldType( String fieldType ) {
       this.fieldType = fieldType;
+   }
+
+   public String getListOfType() {
+      return listOfType;
+   }
+
+   public void setListOfType( String listOfType ) {
+      this.listOfType = listOfType;
    }
    
 }
