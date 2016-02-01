@@ -47,7 +47,7 @@ public class RestDocumentationResource {
       
       final StringBuffer htmlBuffer = htmlHeader();
       
-      htmlBodyHeader( htmlBuffer, "REST Resources" );
+      htmlBodyHeader( htmlBuffer, "REST api" );
       
       htmlRestResourcesList( htmlBuffer );
 
@@ -126,6 +126,8 @@ public class RestDocumentationResource {
       final StringBuffer htmlBuffer = htmlHeader();
       
       htmlBodyHeader( htmlBuffer, "Programmers information" );
+
+      htmlGoBack( htmlBuffer );
 
       htmlRestProgrammerInfo( htmlBuffer );
       
