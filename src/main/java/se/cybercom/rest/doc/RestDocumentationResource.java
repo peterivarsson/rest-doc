@@ -6,7 +6,6 @@
 package se.cybercom.rest.doc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,7 +22,7 @@ import static se.cybercom.rest.doc.RestDocumentationResourceConstants.RESOURCE_T
  *
  * @author Peter Ivarsson Peter.Ivarsson@cybercom.com
  */
-@Path( "/resources" )
+@Path( "/rest-api" )
 public class RestDocumentationResource {
 
    private static final Logger logger = org.slf4j.LoggerFactory.getLogger( RestDocumentationResource.class.getName() );
@@ -105,7 +104,7 @@ public class RestDocumentationResource {
 
       htmlGoBack( htmlBuffer, resourceType );
       
-      htmlRestResourceDomainData( htmlBuffer, domainDataType );
+      htmlRestResourceDomainData( htmlBuffer, resourceType, domainDataType );
       
       htmlGoBack( htmlBuffer, resourceType );
       
@@ -166,7 +165,7 @@ public class RestDocumentationResource {
          
          htmlBuffer.append( "\r\t\t<li><a href=\"" );
          htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-         htmlBuffer.append( "resources/" );
+         htmlBuffer.append( "rest-api/" );
          htmlBuffer.append( res.getClassName() );
          htmlBuffer.append( "\">" );
 
@@ -245,7 +244,7 @@ public class RestDocumentationResource {
             // Domain data
             htmlBuffer.append( "\r\t\t<a href=\"" );
             htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-            htmlBuffer.append( "resources/" );
+            htmlBuffer.append( "rest-api/" );
             htmlBuffer.append( resourceType );
             htmlBuffer.append( "/data/" );
             htmlBuffer.append( param.getParameterClassName() );
@@ -291,10 +290,10 @@ public class RestDocumentationResource {
       }
       else  {
          
-         // Domasin data
+         // Domain data
          htmlBuffer.append( "\r\t\t<a href=\"" );
          htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-         htmlBuffer.append( "resources/" );
+         htmlBuffer.append( "rest-api/" );
          htmlBuffer.append( resourceType );
          htmlBuffer.append( "/data/" );
          htmlBuffer.append( methodInfo.getReturnInfo().getAnnotatedReturnType() );
@@ -310,12 +309,12 @@ public class RestDocumentationResource {
       htmlBuffer.append( "</td>\r\t\t\t</tr>\r\t\t</table><BR>" );
    }
    
-   private void htmlRestResourceDomainData( final StringBuffer htmlBuffer, final String domainDataType ) {
+   private void htmlRestResourceDomainData( final StringBuffer htmlBuffer, final String resourceType, final String domainDataType ) {
    
       logger.debug( "htmlRestResourceDomainData()  restInfo.ClassInfo size = " + 
                     RestDocHandler.restInfo.getClassInfo().size() );
       
-      final List<FieldInfo> fields = RestDocHandler.restInfo.getDataModelInfo().get( domainDataType ).getFields();
+      final List<FieldInfo> fields = RestDocHandler.restInfo.getDomainDataMap().get( domainDataType ).getFields();
       
       htmlBuffer.append( "\r\r\t\t<table>" );
 
@@ -324,7 +323,25 @@ public class RestDocumentationResource {
       fields.stream().forEach( (field) -> {
          
          htmlBuffer.append( "\r\t\t\t<tr><td>" );
-         htmlBuffer.append( field.getFieldName() );
+         
+         if( field.getListOfType().isEmpty() ) {
+            
+            htmlBuffer.append( field.getFieldName() );
+         }
+         else {
+                      
+            // Domain data
+            htmlBuffer.append( "\r\t\t<a href=\"" );
+            htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
+            htmlBuffer.append( "rest-api/" );
+            htmlBuffer.append( resourceType );
+            htmlBuffer.append( "/data/" );
+            htmlBuffer.append( field.getListOfType() );
+            htmlBuffer.append( "\">" );
+            htmlBuffer.append( field.getListOfType() );
+            htmlBuffer.append( "</a>" );
+         }
+         
          htmlBuffer.append( "</td><td>" );
          htmlBuffer.append( field.getFieldType() );
          htmlBuffer.append( "</td></tr>" );
@@ -335,6 +352,8 @@ public class RestDocumentationResource {
    
    private void htmlRestProgrammerInfo( final StringBuffer htmlBuffer ) {
    
+      // DocReturnType
+      
       htmlBuffer.append( "\r\r\t\t<table>" );
 
       htmlBuffer.append( "\r\t\t\t<tr><td>Annotation</td><td>Comment</td></tr>" );
@@ -342,12 +361,46 @@ public class RestDocumentationResource {
       htmlBuffer.append( "\r\t\t\t<tr><td colspan=2></td></tr>" );
       htmlBuffer.append( "\r\t\t\t<tr><td colspan=2>" );
       
-      htmlBuffer.append( "@POST<BR>@Produces( { MediaType.APPLICATION_JSON } )<BR>@Path( PATH_VALIDATE )<BR><b>@DocReturnType( key = \"se.cybercom.rest.doc.PaymentValidation\" )</b><BR>public Response validatePayment( ) {<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PaymentValidation paymentValidation = new PaymentValidation();<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Response.ok( paymentValidation ).build();<BR>}" );
+      htmlBuffer.append( "@POST<BR>@Produces( { MediaType.APPLICATION_JSON } )<BR>@Path( PATH_VALIDATE )<BR>"
+                       + "<b>@DocReturnType( key = \"se.cybercom.rest.doc.PaymentValidation\" )</b><BR>"
+                       + "public Response validatePayment( ) {<BR><BR>"
+                       + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PaymentValidation paymentValidation = new PaymentValidation();<BR><BR>"
+                       + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Response.ok( paymentValidation ).build();<BR>}" );
+
+      htmlBuffer.append( "</td></tr>" );
+      
+   
+      // DocListType
+      
+      htmlBuffer.append( "\r\t\t\t<tr><td colspan=2><BR><BR></td></tr>" );
+
+      htmlBuffer.append( "\r\t\t\t<tr><td>Annotation</td><td>Comment</td></tr>" );
+      htmlBuffer.append( "\r\t\t\t<tr><td>DocListType</td><td>If the method returns a list of some kind ( java.util.List ),<BR>"
+                       + "and you wan't specify what kind of list it is, use this annotation. <BR>Se example below</td></tr>" );
+      htmlBuffer.append( "\r\t\t\t<tr><td colspan=2></td></tr>" );
+      htmlBuffer.append( "\r\t\t\t<tr><td colspan=2>" );
+      
+      htmlBuffer.append( ":<BR>private List&lt;Movie&gt; movies;<BR>"
+                       + ":<BR>/**<BR> * @return A list of movies.<BR> */<BR>"
+                       + "<b>@DocListType( key = \"se.cybercom.rest.doc.domain.Movie\" )</b><BR>"
+                       + "public List<Movie> getMovies() {<BR><BR>"
+                       + "&nbsp;&nbsp;&nbsp;&nbsp;return movies;<BR>}<BR>:" );
 
       htmlBuffer.append( "</td></tr>" );
       htmlBuffer.append( "\r\t\t</table><BR>" );
-      
-         
+
+//
+//
+//	/**
+//	 * Returns a list of movies.
+//	 * 
+//	 * @return A list of movies.
+//	 */
+//   @DocListType(key = "se.sfbio.mobilebackend.domain.Movie")
+//	public List<Movie> getMovies() {
+//		return movies;
+//	}
+
    }
       
    private void htmlGoBack( final StringBuffer htmlBuffer ) {
@@ -355,7 +408,7 @@ public class RestDocumentationResource {
       htmlBuffer.append( "\r\r\t<ul style=\"list-style-type: none\">" );
       htmlBuffer.append( "\r\t\t<li><a href=\"" );
       htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-      htmlBuffer.append( "resources\"/><h4>Go Back</h4></a></li>" );
+      htmlBuffer.append( "rest-api\"/><h4>Go Back</h4></a></li>" );
       htmlBuffer.append( "\r\t</ul>" );
    }
    
@@ -368,7 +421,7 @@ public class RestDocumentationResource {
             htmlBuffer.append( "\r\t<ul style=\"list-style-type: none\">" );
             htmlBuffer.append( "\r\t\t<li><a href=\"" );
             htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-            htmlBuffer.append( "resources/" );
+            htmlBuffer.append( "rest-api/" );
             htmlBuffer.append( res.getClassName() );
             htmlBuffer.append( "\"><h4>Go Back</h4></a></li>" );
             htmlBuffer.append( "\r\t</ul>" );
@@ -381,7 +434,7 @@ public class RestDocumentationResource {
       htmlBuffer.append( "\r\r\t<ul style=\"list-style-type: none\">" );
       htmlBuffer.append( "\r\t\t<li><a href=\"" );
       htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-      htmlBuffer.append( "resources/info\"><h4>Programmers Information</h4></a></li>" );
+      htmlBuffer.append( "rest-api/info\"><h4>Programmers Information</h4></a></li>" );
       htmlBuffer.append( "\r\t</ul>" );
    }
    

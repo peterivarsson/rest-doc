@@ -9,11 +9,9 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -47,37 +45,33 @@ public class RestDocHandler {
 
       restInfo.setClassInfo( new ArrayList<>() );
 
-      String showRestDoc = System.getProperty( "show.rest-doc" );
+      String showRestDoc = System.getProperty( "rest-doc.show" );
 
-      logger.debug( "System Property 'show.rest-doc': " + showRestDoc );
+      String pathRestDocClasses = System.getProperty( "rest-doc.path.classes" );  // /Users/piv/wildfly-8.2.0/standalone/deployments/test-rest-doc-1.0-SNAPSHOT.war/WEB-INF/classes
+
+      logger.debug( "System Property 'rest-doc.show':         " + showRestDoc );
+      logger.debug( "System Property 'rest-doc.path.classes': " + pathRestDocClasses );
             
-      if( (showRestDoc != null) && showRestDoc.equals( "true" ) ) {
+      if( (showRestDoc != null) && showRestDoc.equals( "true" ) && (pathRestDocClasses != null) ) {
          
          // Only do this if the file useRestDoc property is yes
 
-         CodeSource src = RestDocHandler.class.getProtectionDomain().getCodeSource();
+        try {
 
-         if( src != null ) {
+            Files.walk( Paths.get( pathRestDocClasses ) )
+               .filter( Files::isRegularFile )
+               .forEach( ( path ) -> {
 
-            URL jar = src.getLocation();
+                  logger.debug( "path: " + path );
 
-            try {
+                  checkClassFilesForPathAnnotations( path );
+               } );
+         }
+         catch( IOException ioe ) {
 
-               Files.walk( Paths.get( jar.getPath() ) )
-                  .filter( Files::isRegularFile )
-                  .forEach( ( path ) -> {
+            logger.debug( "IOException reading war file: " + ioe.getMessage() );
 
-                     logger.debug( "jar.getPath() " + path );
-      
-                     checkClassFilesForPathAnnotations( path );
-                  } );
-            }
-            catch( IOException ioe ) {
-
-               logger.debug( "IOException reading war file: " + ioe.getMessage() );
-
-               ioe.printStackTrace();
-            }
+            ioe.printStackTrace();
          }
       }
    }
@@ -368,6 +362,14 @@ public class RestDocHandler {
 
    private void addDomainDataInfo( String className ) {
  
+      DataModelInfo domainData = restInfo.getDomainDataMap().get( className ); 
+
+      if( domainData != null ) {
+
+         // This data already exists
+         return;
+      }
+
       try {
           
          Class clazz = Class.forName( className );      
@@ -402,15 +404,10 @@ public class RestDocHandler {
                         
                         String annotationKey = methodParam.key();
                         
-                        DataModelInfo dataModelInfoForListAnnotation = restInfo.getDataModelInfo().get( annotationKey ); 
-                                
-                        if( dataModelInfoForListAnnotation == null ) {
+                        fieldInfo.setListOfType( annotationKey );
 
-                           fieldInfo.setListOfType( annotationKey );
-
-                           // This info not added before, call recursive
-                           addDomainDataInfo( annotationKey );
-                        }
+                        // Try to add this annotation data
+                        addDomainDataInfo( annotationKey );
                      }
                   }
                
@@ -421,7 +418,7 @@ public class RestDocHandler {
               
          if( ! dataModelInfo.getFields().isEmpty() ) {
             
-            restInfo.getDataModelInfo().put( className, dataModelInfo );
+            restInfo.getDomainDataMap().put( className, dataModelInfo );
          }
       }
       catch( ClassNotFoundException cnfe ) {

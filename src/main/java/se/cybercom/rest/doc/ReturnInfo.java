@@ -14,7 +14,6 @@ public class ReturnInfo {
    
    private String returnClassName;
    private String annotatedReturnType;
-//   private List<FieldInfo> fields;
 
    public String getReturnClassName() {
       return returnClassName;
@@ -31,13 +30,5 @@ public class ReturnInfo {
    public void setAnnotatedReturnType( String annotatedReturnType ) {
       this.annotatedReturnType = annotatedReturnType;
    }
-
-//   public List<FieldInfo> getFields() {
-//      return fields;
-//   }
-//
-//   public void setFields( List<FieldInfo> fields ) {
-//      this.fields = fields;
-//   }
 
 }

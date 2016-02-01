@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class RestInfo {
    
-   private List<ClassInfo>      classInfo;
-   private HashMap<String, DataModelInfo>  dataModelInfo = new HashMap<>();
+   private List<ClassInfo>                 classInfo;
+   private HashMap<String, DataModelInfo>  domainDataMap = new HashMap<>();
 
    public List<ClassInfo> getClassInfo() {
       return classInfo;
@@ -25,12 +25,12 @@ public class RestInfo {
       this.classInfo = classInfo;
    }
 
-   public HashMap<String, DataModelInfo> getDataModelInfo() {
-      return dataModelInfo;
+   public HashMap<String, DataModelInfo> getDomainDataMap() {
+      return domainDataMap;
    }
 
-   public void setDataModelInfo( HashMap<String, DataModelInfo> dataModelInfo ) {
-      this.dataModelInfo = dataModelInfo;
+   public void setDomainDataMap( HashMap<String, DataModelInfo> domainDataMap ) {
+      this.domainDataMap = domainDataMap;
    }
 
 }
