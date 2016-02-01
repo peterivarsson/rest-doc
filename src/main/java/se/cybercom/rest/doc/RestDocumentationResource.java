@@ -388,19 +388,6 @@ public class RestDocumentationResource {
 
       htmlBuffer.append( "</td></tr>" );
       htmlBuffer.append( "\r\t\t</table><BR>" );
-
-//
-//
-//	/**
-//	 * Returns a list of movies.
-//	 * 
-//	 * @return A list of movies.
-//	 */
-//   @DocListType(key = "se.sfbio.mobilebackend.domain.Movie")
-//	public List<Movie> getMovies() {
-//		return movies;
-//	}
-
    }
       
    private void htmlGoBack( final StringBuffer htmlBuffer ) {
