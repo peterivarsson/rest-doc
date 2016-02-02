@@ -320,32 +320,46 @@ public class RestDocumentationResource {
       
       htmlBuffer.append( "\r\r\t\t<table>" );
 
-      htmlBuffer.append( "\r\t\t\t<tr><td>Field name</td><td>Field type</td></tr>" );
+      htmlBuffer.append( "\r\t\t\t<tr><td>Field name</td><td>Field type</td><td>Type in list</td></tr>" );
       
       fields.stream().forEach( (field) -> {
          
          htmlBuffer.append( "\r\t\t\t<tr><td>" );
          
-         if( field.getListOfType().isEmpty() ) {
-            
-            htmlBuffer.append( field.getFieldName() );
-         }
-         else {
-                      
-            // Domain data
-            htmlBuffer.append( "\r\t\t<a href=\"" );
-            htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
-            htmlBuffer.append( "rest-api/" );
-            htmlBuffer.append( resourceType );
-            htmlBuffer.append( "/data/" );
-            htmlBuffer.append( field.getListOfType() );
-            htmlBuffer.append( "\">" );
-            htmlBuffer.append( field.getListOfType() );
-            htmlBuffer.append( "</a>" );
-         }
+         htmlBuffer.append( field.getFieldName() );
          
          htmlBuffer.append( "</td><td>" );
          htmlBuffer.append( field.getFieldType() );
+         htmlBuffer.append( "</td><td>" );
+         
+         if( ! field.getListOfType().isEmpty() ) {
+            
+            if( ( field.getListOfType().contains( "." ) == true ) && 
+                ( field.getListOfType().startsWith( "java." ) == false )  ) {
+
+               // Domain data
+               htmlBuffer.append( "\r\t\t<a href=\"" );
+               htmlBuffer.append(  uriInfo.getBaseUri().getPath() );   // '/restdoc/'
+               htmlBuffer.append( "rest-api/" );
+               htmlBuffer.append( resourceType );
+               htmlBuffer.append( "/data/" );
+               htmlBuffer.append( field.getListOfType() );
+               htmlBuffer.append( "\">" );
+               htmlBuffer.append( field.getListOfType() );
+               htmlBuffer.append( "</a>" );
+            }
+            else {
+               
+               // This is a Primitive Data Type
+               htmlBuffer.append( field.getListOfType() );
+            }
+         }
+         else {
+            
+            // This is not a list
+            htmlBuffer.append( "-" );
+         }
+         
          htmlBuffer.append( "</td></tr>" );
       } );
       
@@ -383,11 +397,15 @@ public class RestDocumentationResource {
       htmlBuffer.append( "\r\t\t\t<tr><td colspan=2>" );
       
       htmlBuffer.append( ":<BR>private List&lt;Movie&gt; movies;<BR>"
+                       + "private List&lt;String&gt; movieVersions;<BR>"
                        + ":<BR>/**<BR> * @return A list of movies.<BR> */<BR>"
                        + "<b>@DocListType( key = \"se.cybercom.rest.doc.domain.Movie\" )</b><BR>"
                        + "public List<Movie> getMovies() {<BR><BR>"
-                       + "&nbsp;&nbsp;&nbsp;&nbsp;return movies;<BR>}<BR>:" );
-
+                       + "&nbsp;&nbsp;&nbsp;&nbsp;return movies;<BR>}<BR>:<BR><BR>"
+                       + ":<BR><b>@DocListType( key = \"String\" )</b><BR>"
+                       + "public List<String> getMovieVersions() {<BR><BR>"
+                       + "&nbsp;&nbsp;&nbsp;&nbsp;return movieVersions;<BR>}<BR>:" );
+      
       htmlBuffer.append( "</td></tr>" );
       htmlBuffer.append( "\r\t\t</table><BR>" );
    }
