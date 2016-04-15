@@ -18,7 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
-import org.slf4j.Logger;
+import java.util.logging.Logger;
+
 
 /**
  *
@@ -28,15 +29,16 @@ import org.slf4j.Logger;
 @Singleton
 public class RestDocHandler {
 
-   private static final Logger logger = org.slf4j.LoggerFactory.getLogger( RestDocHandler.class.getName() );
+   private static final Logger logger = Logger.getLogger( RestDocHandler.class.getName() );
 
    public static RestInfo restInfo = new RestInfo();
 
    /**
-    * Add the folowing in wildfly
+    * Add the following in wildfly
     *
     *  <system-properties>
     *    <property name="show.rest-doc" value="true"/>
+    *    <property name="rest-doc.path.classes" value="/Users/piv/wildfly-8.2.0/standalone/deployments/test-rest-doc-1.0-SNAPSHOT.war/WEB-INF/classes"/>
     *  </system-properties>
     */            
    @PostConstruct
@@ -46,11 +48,10 @@ public class RestDocHandler {
       restInfo.setClassInfo( new ArrayList<>() );
 
       String showRestDoc = System.getProperty( "rest-doc.show" );
-
       String pathRestDocClasses = System.getProperty( "rest-doc.path.classes" );  // /Users/piv/wildfly-8.2.0/standalone/deployments/test-rest-doc-1.0-SNAPSHOT.war/WEB-INF/classes
 
-      logger.debug( "System Property 'rest-doc.show':         " + showRestDoc );
-      logger.debug( "System Property 'rest-doc.path.classes': " + pathRestDocClasses );
+      logger.info( "System Property 'rest-doc.show':         " + showRestDoc );
+      logger.info( "System Property 'rest-doc.path.classes': " + pathRestDocClasses );
             
       if( (showRestDoc != null) && showRestDoc.equals( "true" ) && (pathRestDocClasses != null) ) {
          
@@ -62,14 +63,14 @@ public class RestDocHandler {
                .filter( Files::isRegularFile )
                .forEach( ( path ) -> {
 
-                  logger.debug( "path: " + path );
+                  logger.info( "path: " + path );
 
                   checkClassFilesForPathAnnotations( path );
                } );
          }
          catch( IOException ioe ) {
 
-            logger.debug( "IOException reading war file: " + ioe.getMessage() );
+            logger.severe( "IOException reading war file: " + ioe.getMessage() );
 
             ioe.printStackTrace();
          }
@@ -78,7 +79,7 @@ public class RestDocHandler {
    
    private void checkClassFilesForPathAnnotations( Path classNamePath ) {
       
-      logger.debug( "Class file: " + classNamePath.getFileName().toString() );
+      logger.info( "Class file: " + classNamePath.getFileName().toString() );
       
       ClassInfo classInfo = getFullClassName( classNamePath );
       
@@ -115,7 +116,7 @@ public class RestDocHandler {
       }
       catch( ClassNotFoundException cnfe ) {
          
-         logger.debug( "checkClassFilesForPathAnnotations, ClassNotFoundException: " + cnfe.getMessage() );
+         logger.severe( "checkClassFilesForPathAnnotations, ClassNotFoundException: " + cnfe.getMessage() );
       }
    }
 
@@ -257,13 +258,13 @@ public class RestDocHandler {
       StringBuilder consumeTypes = new StringBuilder();
       boolean firstConsumeType = true;
       
-      logger.debug( "Method: " + method.toGenericString() );
+      logger.info( "Method: " + method.toGenericString() );
 
       Annotation[] methodAnnotations = method.getAnnotations();
 
       for( Annotation annotation: methodAnnotations ) {
          
-         logger.debug( "Method Annotation: " + annotation.annotationType().toGenericString() );
+         logger.info( "Method Annotation: " + annotation.annotationType().toGenericString() );
         
          if( annotation instanceof javax.ws.rs.GET ) {
 
@@ -423,7 +424,7 @@ public class RestDocHandler {
       }
       catch( ClassNotFoundException cnfe ) {
          
-         logger.debug( "addDomainDataInfo, ClassNotFoundException: " + cnfe.getMessage() );
+         logger.severe( "addDomainDataInfo, ClassNotFoundException: " + cnfe.getMessage() );
       }
    }
 
@@ -545,7 +546,7 @@ public class RestDocHandler {
             
             addDomainDataInfo(parameter.getType().getName() );
                   
-            logger.debug( "Parameter without annotation: " + parameter.getName() + " Type: " + parameter.getType().getName() );
+            logger.info( "Parameter without annotation: " + parameter.getName() + " Type: " + parameter.getType().getName() );
          }
       }
    }

@@ -7,6 +7,8 @@ package se.cybercom.rest.doc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -14,9 +16,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import org.slf4j.Logger;
+
 import static se.cybercom.rest.doc.RestDocumentationResourceConstants.DOMAIN_DATA_TYPE;
 import static se.cybercom.rest.doc.RestDocumentationResourceConstants.RESOURCE_TYPE;
+
 
 /**
  *
@@ -25,7 +28,7 @@ import static se.cybercom.rest.doc.RestDocumentationResourceConstants.RESOURCE_T
 @Path( "/rest-api" )
 public class RestDocumentationResource {
 
-   private static final Logger logger = org.slf4j.LoggerFactory.getLogger( RestDocumentationResource.class.getName() );
+   private static final Logger logger = Logger.getLogger( RestDocumentationResource.class.getName() );
 
    private static int methodNumber = -1;
 
@@ -43,7 +46,7 @@ public class RestDocumentationResource {
    @Path( "" )
    public String getRestDocumentation() {
 
-      logger.debug( "getResouresDocumentation() main" );
+      logger.info( "getResouresDocumentation() main" );
       
       final StringBuffer htmlBuffer = htmlHeader();
       
@@ -68,7 +71,7 @@ public class RestDocumentationResource {
    @Path("/{" + RESOURCE_TYPE + "}")
    public String getResouresDocumentation( @PathParam(RESOURCE_TYPE) final String resourceType ) {
 
-      logger.debug( "getResouresDocumentation( " + resourceType + " )" );
+      logger.info( "getResouresDocumentation( " + resourceType + " )" );
       
       final StringBuffer htmlBuffer = htmlHeader();
 
@@ -96,7 +99,7 @@ public class RestDocumentationResource {
    public String getDomainDataDocumentation( @PathParam(RESOURCE_TYPE) final String resourceType,
                                              @PathParam(DOMAIN_DATA_TYPE) final String domainDataType ) {
 
-      logger.debug( "getResouresDocumentation( " + resourceType + ", " + domainDataType + " )" );
+      logger.info( "getResouresDocumentation( " + resourceType + ", " + domainDataType + " )" );
       
       final StringBuffer htmlBuffer = htmlHeader();
       
@@ -160,7 +163,7 @@ public class RestDocumentationResource {
    
       htmlBuffer.append( "\r\r\t<ul>" );
               
-      logger.debug( "htmlRestResourcesList()  restInfo.ClassInfo size = " + 
+      logger.info( "htmlRestResourcesList()  restInfo.ClassInfo size = " + 
                     RestDocHandler.restInfo.getClassInfo().size() );
       
       RestDocHandler.restInfo.getClassInfo().stream().forEach( (res) -> {
@@ -183,7 +186,7 @@ public class RestDocumentationResource {
    
       List<MethodInfo>  methodInfoList = new ArrayList<>();
               
-      logger.debug( "htmlRestResourceDetail()  restInfo.ClassInfo size = " + 
+      logger.info( "htmlRestResourceDetail()  restInfo.ClassInfo size = " + 
                     RestDocHandler.restInfo.getClassInfo().size() );
       
       RestDocHandler.restInfo.getClassInfo().stream().forEach( (res) -> {
@@ -313,7 +316,7 @@ public class RestDocumentationResource {
    
    private void htmlRestResourceDomainData( final StringBuffer htmlBuffer, final String resourceType, final String domainDataType ) {
    
-      logger.debug( "htmlRestResourceDomainData()  restInfo.ClassInfo size = " + 
+      logger.info( "htmlRestResourceDomainData()  restInfo.ClassInfo size = " + 
                     RestDocHandler.restInfo.getClassInfo().size() );
       
       final List<FieldInfo> fields = RestDocHandler.restInfo.getDomainDataMap().get( domainDataType ).getFields();
